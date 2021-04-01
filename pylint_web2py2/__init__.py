@@ -21,6 +21,12 @@ import re
 import sys
 import ipdb
 
+if os.sep == '\\':
+
+    web2py_pattern = r'(.+?)\\applications\\(.+?)\\(.+?)\\'
+else:
+    web2py_pattern = r'(.+?)/applications/(.+?)/(.+?)/' 
+
 def register(_):
     'Register web2py transformer, called by pylint'
     MANAGER.register_transform(scoped_nodes.Module, web2py_transform)
@@ -30,7 +36,7 @@ def web2py_transform(module):
 
     if module.file:
         #Check if this file belongs to web2py
-        web2py_match = re.match(r'(.+?)/applications/(.+?)/(.+?)/', module.file)
+        web2py_match = re.match(web2py_pattern, module.file)
         if web2py_match:
             web2py_path, app_name, subfolder = web2py_match.group(1), web2py_match.group(2), web2py_match.group(3)
             return transformer.transform_module(module, web2py_path, app_name, subfolder)
